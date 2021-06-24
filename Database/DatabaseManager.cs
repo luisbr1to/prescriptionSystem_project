@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Diagnostics;
+using System.Configuration;
 
 namespace prescriptionSystem_project.Database
 {
@@ -24,8 +25,9 @@ namespace prescriptionSystem_project.Database
         //Vars
         private string DATE = DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss");
 
-        private static string connectionString =
-            "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\Brito\\source\\repos\\prescriptionSystem_project\\Database\\Database.mdf;Integrated Security=True";
+        private static string connectionString = System.Configuration.ConfigurationManager
+            .ConnectionStrings["prescriptionSystem_project.Properties.Settings.DatabaseConnectionString"]
+            .ConnectionString;
 
         private SqlCommand _execQuery;
 
