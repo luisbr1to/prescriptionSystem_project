@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using prescriptionSystem_project.Repositorys;
 
 namespace prescriptionSystem_project
 {
@@ -15,6 +16,14 @@ namespace prescriptionSystem_project
     {
         private int mouseX = 0, mouseY = 0;
         private bool mouseDown;
+
+        //Initialize Authentication Objects
+        private static IAuthentication authentication = new Auth();
+        private IAuthentication loginProxy = new Proxy(authentication);
+        private UserRepository userRepo = new UserRepository();
+
+        //DB Initialization
+        private Database.DatabaseManager DB = Database.DatabaseManager.GetInstance();
 
         [DllImport("Gdi32.dll", EntryPoint = "CreateRoundRectRgn")]
 
@@ -32,7 +41,9 @@ namespace prescriptionSystem_project
         public Login()
         {
             InitializeComponent();
+            this.CenterToScreen();
             Region = System.Drawing.Region.FromHrgn(CreateRoundRectRgn(0, 0, Width, Height, 15, 15));
+            tx_nif.Focus();
         }
 
         private void label2_Click(object sender, EventArgs e)
@@ -53,27 +64,31 @@ namespace prescriptionSystem_project
         private void bt_signin_Click(object sender, EventArgs e)
         {
             this.Hide();
-            Register reg = new Register(); //this is the change, code for redirect  
+            Register reg = new Register(this); //this is the change, code for redirect  
             reg.ShowDialog();
         }
 
         private void bt_signup_Click(object sender, EventArgs e)
         {
             int nif = int.Parse(tx_nif.Text);
-            string pass = tx_pass.Text;
+            string password = tx_pass.Text;
 
-            Auth login = new Auth();
-            User user = login.CheckAuth(nif, pass);
+            bool result  = loginProxy.checkAuthentication(nif, password);
 
-            if (user != null)
+            if (result)
             {
-                this.Hide();
-                Dashboard dash = new Dashboard(user); //this is the change, code for redirect  
+                Hide();
+                User user = userRepo.GetUserById(nif) ; //DB get user data by id
+                Dashboard dash = new Dashboard(user); //this is the change, code for redirect
                 dash.ShowDialog();
+                Close();
             }
             else
             {
+                tx_pass.Text = "";
+                tx_nif.Text = "";
                 MessageBox.Show("Input data error, or account not registered!");
+                tx_nif.Focus();
             }
         }
 

@@ -6,7 +6,6 @@ namespace prescriptionSystem_project
 {
     public class Patient : User
     {
-
         public Patient(int nif, string password, string fullName, int phone, string address, DateTime birthDate)
         {
             Nif = nif;

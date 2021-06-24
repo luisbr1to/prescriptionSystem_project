@@ -9,15 +9,26 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using prescriptionSystem_project.Database;
+using prescriptionSystem_project.Repositorys;
 
 namespace prescriptionSystem_project
 {
     public partial class Dashboard : Form
     {
-        private Database.DatabaseManager DB = Database.DatabaseManager.GetInstance();
+       // private Database.DatabaseManager DB = Database.DatabaseManager.GetInstance();
         private int mouseX = 0, mouseY = 0;
         private bool mouseDown;
         private User user;
+        private List<Treatment> session_treatments_list = new List<Treatment>();
+
+        //Repository's
+        private PrescriptionRepository prescriptionRepo = new PrescriptionRepository();
+        private TreatmentRepository treatmentRepo = new TreatmentRepository();
+        private UserRepository userRepo = new UserRepository();
+        private PatientRepository patientRepo = new PatientRepository();
+        private SessionRepository sessionRepo = new SessionRepository();
+        private RequestsRepository requestsRepo = new RequestsRepository();
 
         [DllImport("Gdi32.dll", EntryPoint = "CreateRoundRectRgn")]
 
@@ -31,12 +42,13 @@ namespace prescriptionSystem_project
             int nHeightEllipse
 
         );
+
         public Dashboard(User user)
         {   
             //Get logged user
             this.user = user;
             InitializeComponent();
-            
+            this.CenterToScreen();
             //Round panels
             Region = System.Drawing.Region.FromHrgn(CreateRoundRectRgn(0, 0, Width, Height, 15, 15));
             pn_activeTreatments.Region = System.Drawing.Region.FromHrgn(CreateRoundRectRgn(0, 0, pn_activeTreatments.Width, pn_activeTreatments.Height, 15, 15));
@@ -55,18 +67,65 @@ namespace prescriptionSystem_project
             //Populate comboxes
             combox_item.DataSource = Enum.GetValues(typeof(ItemType));
             combo_treatments.DataSource = Enum.GetValues(typeof(ActionsType));
-            combox_patient.DataSource = DB.GetAllUsers();
-            combox_patientsTreatment.DataSource = DB.GetAllUsers();
-            combo_patientsTreatmentSession.DataSource = DB.GetAllUsers();
             combo_TreatmentList.DataSource = Enum.GetValues(typeof(ActionsType));
+
+            combox_patient.DisplayMember = "fullname";
+            combox_patient.DataSource = patientRepo.GetAllPatients();
+            
+            combox_patientsTreatment.DisplayMember = "fullname";
+            combox_patientsTreatment.DataSource = patientRepo.GetAllPatients();
+
+            combo_patientsTreatmentSession.DisplayMember = "fullname";
+            combo_patientsTreatmentSession.DataSource = patientRepo.GetAllPatients();
+
+            combo_patientPrHistory.DisplayMember = "fullname";
+            combo_patientPrHistory.DataSource = patientRepo.GetAllPatients();
+
+            if (user.UserType == "therapist")
+            {
+                dataGridView4.Hide();
+                dataGridView3.Show();
+                dataGridView3.DataSource = requestsRepo.getAllRequestsForTherapist(user.Nif);
+                dataGridView3.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            }
+            else
+            {
+                dataGridView3.Hide();
+                dataGridView4.Show();
+                
+                dataGridView4.DataSource = requestsRepo.getAllRequestsForPatient(user.Nif);
+
+                DataGridViewButtonColumn acceptButton = new DataGridViewButtonColumn();
+                {
+                    acceptButton.Name = "bt_accept";
+                    acceptButton.HeaderText = "Accept";
+                    acceptButton.Text = "Accept";
+                    acceptButton.UseColumnTextForButtonValue = true; //dont forget this line
+                    this.dataGridView4.Columns.Add(acceptButton);
+                }
+
+                DataGridViewButtonColumn rejectButton = new DataGridViewButtonColumn();
+                {
+                    rejectButton.Name = "bt_reject";
+                    rejectButton.HeaderText = "Reject";
+                    rejectButton.Text = "Reject";
+                    rejectButton.UseColumnTextForButtonValue = true; //dont forget this line
+                    this.dataGridView4.Columns.Add(rejectButton);
+                }
+
+            }
+
+            //List views
             listView1.View = View.List;
+
 
             if (user.UserType == "patient")
             {
                 bt_treatmentSession.Hide();
                 bt_crPrescriptions.Hide();
                 bt_crTreatment.Hide();
-                br_crTreatmentPlan.Hide();
+                bt_crTreatmentPlan.Hide();
+                bt_prescriptionHistory.Hide();
             }
             else
             {
@@ -81,20 +140,16 @@ namespace prescriptionSystem_project
             pn_createPrescription.Hide();
             pn_crTreatment.Hide();
             pn_treatmentSession.Hide();
+            pn_PrescriptionHistory.Hide();
         }
 
-        private int ExtractPatient(ComboBox comboBox)
+        private int ExtractPatientNif(ComboBox comboBox)
         {
-            string patientValue = comboBox.SelectedItem.ToString();
-
-            string[] subs = patientValue.Split(',');
-
-            patientValue = subs[0].Substring(1, subs[0].Length - 1);
-
-            return int.Parse(patientValue);
+            Patient patient = (Patient)comboBox.SelectedItem;
+            
+            return patient == null ? 0 : patient.Nif;
         }
-
-
+        
         private void Dashboard_Load(object sender, EventArgs e)
         {
 
@@ -123,6 +178,8 @@ namespace prescriptionSystem_project
         private void bt_dashboard_Click(object sender, EventArgs e)
         {
             HideAllPanels();
+            dataGridView4.DataSource = requestsRepo.getAllRequestsForPatient(user.Nif);
+            dataGridView3.DataSource = requestsRepo.getAllRequestsForTherapist(user.Nif); ;
             pn_dashboard.Show();
         }
 
@@ -137,55 +194,58 @@ namespace prescriptionSystem_project
 
         }
 
-        private void label2_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
         }
 
         private void button1_Click_1(object sender, EventArgs e)
         {
-            int patientValue = ExtractPatient(combox_patient);
-            string item = combox_item.SelectedItem.ToString();
+
+            int therapistId = user.Nif; 
+            int patientId = ExtractPatientNif(combox_patient);
+            ItemType item = (ItemType)combox_item.SelectedItem;
             string description = tx_description.Text;
             int quantity = int.Parse(nm_quantity.Text);
+            DateTime date = DateTime.Now;
 
-            DB.createPrescription(user.Nif, patientValue, item, description, quantity);
+            Prescription prescription = new Prescription(therapistId, patientId, item, description, date, quantity);
+
+            prescriptionRepo.InsertPrescription(prescription);
         }
-
-        private void lb_doses_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void tx_notes_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void tx_doses_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
+        
         private void bt_crTreatments_Click(object sender, EventArgs e)
         {
-            int patientValue = ExtractPatient(combox_patientsTreatment);
-            string startdate = DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss");
-            string enddate = dateTimePicker1.Value.ToString("yyyy-MM-dd hh:mm:ss");
-            int prescriptionid = int.Parse((combo_userPrescription.SelectedItem as dynamic).Value.ToString());
-            string action = combo_treatments.SelectedItem.ToString(); ;
+            Treatment treatment;
+            int therapistId = user.Nif;
+            int patientId = ExtractPatientNif(combox_patientsTreatment);
+            DateTime startdate = DateTime.Now;
+            DateTime enddate = dateTimePicker1.Value;
+            ActionsType action = (ActionsType)combo_treatments.SelectedItem; //TODO check this cast
+            string status = "Active";
 
-            DB.createTreatment(user.Nif, patientValue, startdate, enddate, prescriptionid, action);
+            int prescriptionId;
+            if (combo_treatments.SelectedItem.ToString() == "Prescription")
+            {
+                Prescription prescription = (Prescription) combo_userPrescription.SelectedItem;
+                prescriptionId = prescription.Id;
+                treatment = new Treatment(therapistId, patientId, action, prescriptionId, startdate, enddate, status);
+            }
+            else
+            {
+                 treatment = new Treatment(therapistId, patientId, action, startdate, enddate, status);
+            }
+            
+            treatmentRepo.InsertTreatment(treatment);
         }
 
         private void bt_crTreatment_Click(object sender, EventArgs e)
         {
             HideAllPanels();
             pn_crTreatment.Show();
+            int patientValue = ExtractPatientNif(combox_patientsTreatment);
+            Debug.Write("\n" + patientRepo.GetPatientPrescriptionsByNif(patientValue));
+            combo_userPrescription.DataSource = patientRepo.GetPatientPrescriptionsByNif(patientValue);
+            combo_userPrescription.DisplayMember = "Description";
         }
 
         private void bt_treatmentSession_Click(object sender, EventArgs e)
@@ -196,8 +256,16 @@ namespace prescriptionSystem_project
 
         private void bt_createTreatmentSession_Click(object sender, EventArgs e)
         {
-            int patientValue = ExtractPatient(combo_patientsTreatmentSession);
+            int patientValue = ExtractPatientNif(combo_patientsTreatmentSession);
             string notes = tx_sessionNotes.Text;
+            sessionRepo.InsertSession(user.Nif, patientValue, notes);
+            
+            foreach (var treatment in session_treatments_list)
+            {
+                sessionRepo.addSessions_Treatments(sessionRepo.GetLastSessionId(), treatment.Id);
+            }
+
+            session_treatments_list.Clear();
         }
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -207,35 +275,15 @@ namespace prescriptionSystem_project
 
         private void combo_patientsTreatmentSession_SelectedIndexChanged(object sender, EventArgs e)
         {
-            int patientValue = ExtractPatient(combo_patientsTreatmentSession);
-
-            dataGridView1.ColumnCount = 5;
-            dataGridView1.Columns[0].Name = "Action";
-            dataGridView1.Columns[1].Name = "Start Date";
-            dataGridView1.Columns[2].Name = "End Date";
-            dataGridView1.Columns[3].Name = "Prescription ID";
-            dataGridView1.Columns[4].Name = "Status";
-
-            DB.getPatienttreatments(patientValue).ForEach(delegate(List<string> list)
-            {
-                dataGridView1.Rows.Add(list.ToArray());
-            });
+            int patientValue = ExtractPatientNif(combo_patientsTreatmentSession);
+            dataGridView1.DataSource = patientRepo.GetPatientTreatmentsByNif(patientValue);
         }
 
         private void combox_patientsTreatment_SelectedIndexChanged(object sender, EventArgs e)
         {
-            combo_userPrescription.Items.Clear();
-            int patientValue = ExtractPatient(combox_patientsTreatment);
-            combo_userPrescription.DisplayMember = "Item";
-            combo_userPrescription.ValueMember = "Value";
-
-            DB.GetUserPrescriptions(patientValue).ForEach(delegate (List<string> list)
-            {
-                list.ToArray();
-                string title = list[1] + " (" + list[2] +")";
-                combo_userPrescription.Items.Add(new { Item = title, Value = list[0] });
-            });
-
+            int patientValue = ExtractPatientNif(combox_patientsTreatment);
+            combo_userPrescription.DisplayMember = "description";
+            combo_userPrescription.DataSource = patientRepo.GetPatientPrescriptionsByNif(patientValue);
         }
 
         private void combo_userPrescription_SelectedIndexChanged(object sender, EventArgs e)
@@ -258,27 +306,100 @@ namespace prescriptionSystem_project
 
         private void button1_Click_2(object sender, EventArgs e)
         {
-            string title = (combo_TreatmentItem.SelectedItem as dynamic).Item.ToString();
-            //string value = (combo_userPrescription.SelectedItem as dynamic).Value.ToString();
+            Treatment value = (Treatment)combo_TreatmentItem.SelectedItem;
+            string title = (value.Action.ToString() +" (" +value.EndDate.ToString()+")");
+            
             listView1.Items.Add(title);
+            session_treatments_list.Add(value);
         }
 
         private void combo_TreatmentList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            combo_TreatmentItem.Items.Clear();
-
-            int patientValue = ExtractPatient(combox_patientsTreatment);
-            string type = combo_TreatmentList.SelectedItem.ToString();
-
-            combo_TreatmentItem.DisplayMember = "Item";
-            combo_TreatmentItem.ValueMember = "Value";
-
-            DB.GetUserTreatments(patientValue, type).ForEach(delegate (List<string> list)
+            if (ExtractPatientNif(combox_patientsTreatment) != 0)
             {
-                list.ToArray();
-                string title = list[1] + " (" + list[2] +" - "+ list[3] +")";
-                combo_TreatmentItem.Items.Add(new { Item = title, Value = list[0] });
-            });
+                int patientValue = ExtractPatientNif(combox_patientsTreatment);
+                string type = combo_TreatmentList.SelectedItem.ToString();
+
+                combo_TreatmentItem.DisplayMember = "action"; // TODO mostrar mais dados na combo box
+                combo_TreatmentItem.DataSource = patientRepo.GetPatientTreatmentsByAction(patientValue, type);
+            }
+        }
+
+
+        private void bt_prescriptionHistory_Click(object sender, EventArgs e)
+        {
+            HideAllPanels();
+
+            int patient = ExtractPatientNif(combo_patientPrHistory);
+            dataGridView2.DataSource = prescriptionRepo.getAllPrescriptionsFromPatient_WithAccess(user.Nif, patient);
+            ck_protectedPrescriptionList.DataSource = prescriptionRepo.getAllPrescriptionsFromOtherTherapists(user.Nif, patient);
+            ck_protectedPrescriptionList.DisplayMember = "DisplayMemberChecklist";
+
+            pn_PrescriptionHistory.Show();
+        }
+
+        private void combo_patientPrHistory_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int patient = ExtractPatientNif(combo_patientPrHistory);
+            dataGridView2.DataSource = prescriptionRepo.getAllPrescriptionsFromPatient_WithAccess(user.Nif, patient);
+            ck_protectedPrescriptionList.DataSource = prescriptionRepo.getAllPrescriptionsFromOtherTherapists(user.Nif, patient);
+            ck_protectedPrescriptionList.DisplayMember = "DisplayMemberChecklist";
+        }
+
+        private void bt_requestAccess_Click(object sender, EventArgs e)
+        {
+            int patient = ExtractPatientNif(combo_patientPrHistory);
+            List<Requests> values = new List<Requests>();
+
+            foreach (Prescription item in ck_protectedPrescriptionList.CheckedItems)
+            {
+                int prescriptionId = item.Id;
+                Requests request = new Requests(prescriptionId, user.Nif, patient, "Pending");
+                values.Add(request);
+            }
+
+            foreach (Requests request in values)
+            {
+                requestsRepo.InsertRequest(request);
+            }
+            
+        }
+
+        private void pn_dashboard_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void bt_logout_Click(object sender, EventArgs e)
+        {
+            Hide();
+            Login loginpanel = new Login();
+            loginpanel.ShowDialog();
+            Close();
+        }
+
+        private void dataGridView4_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            int rowindex = dataGridView4.CurrentCell.RowIndex;
+            int requestId = int.Parse(dataGridView4.Rows[rowindex].Cells[2].Value.ToString());
+
+            int prescriptionId = int.Parse(dataGridView4.Rows[rowindex].Cells[3].Value.ToString());
+            int therapistId = int.Parse(dataGridView4.Rows[rowindex].Cells[4].Value.ToString());
+            int patientId = int.Parse(dataGridView4.Rows[rowindex].Cells[5].Value.ToString());
+
+            if (dataGridView4.Columns[e.ColumnIndex].Name == "bt_accept")
+            {
+                requestsRepo.updateRequest(requestId, "Accepted");
+                prescriptionRepo.updatePrescriptionHistory(prescriptionId, therapistId, patientId);
+                MessageBox.Show("Request accepted!");
+                dataGridView4.DataSource = requestsRepo.getAllRequestsForPatient(user.Nif);
+            }
+            else if (dataGridView4.Columns[e.ColumnIndex].Name == "bt_reject")
+            {
+                requestsRepo.updateRequest(requestId, "Rejected");
+                MessageBox.Show("Request Rejected!");
+                dataGridView4.DataSource = requestsRepo.getAllRequestsForPatient(user.Nif);
+            }
         }
 
         private void panel3_MouseMove(object sender, MouseEventArgs e)

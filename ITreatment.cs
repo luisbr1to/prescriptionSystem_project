@@ -13,6 +13,7 @@ namespace prescriptionSystem_project
 
     public interface ITreatment
     {
+        int Id { get; set; }
         int TherapistId { get; set; }
         int PatientId { get; set; }
         DateTime StartDate { get; set; }

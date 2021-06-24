@@ -29,12 +29,15 @@ namespace prescriptionSystem_project
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             this.pn_menu = new System.Windows.Forms.Panel();
+            this.bt_logout = new System.Windows.Forms.Button();
             this.bt_treatmentSession = new System.Windows.Forms.Button();
             this.bt_prescriptionHistory = new System.Windows.Forms.Button();
             this.bt_crPrescriptions = new System.Windows.Forms.Button();
             this.bt_crTreatment = new System.Windows.Forms.Button();
-            this.br_crTreatmentPlan = new System.Windows.Forms.Button();
+            this.bt_crTreatmentPlan = new System.Windows.Forms.Button();
             this.bt_dashboard = new System.Windows.Forms.Button();
             this.pn_userDetails = new System.Windows.Forms.Panel();
             this.lb_ops = new System.Windows.Forms.Label();
@@ -67,6 +70,10 @@ namespace prescriptionSystem_project
             this.lb_enddate = new System.Windows.Forms.Label();
             this.lb_title = new System.Windows.Forms.Label();
             this.pn_treatmentSession = new System.Windows.Forms.Panel();
+            this.combo_TreatmentItem = new System.Windows.Forms.ComboBox();
+            this.listView1 = new System.Windows.Forms.ListView();
+            this.button1 = new System.Windows.Forms.Button();
+            this.combo_TreatmentList = new System.Windows.Forms.ComboBox();
             this.lb_tr = new System.Windows.Forms.Label();
             this.lb_pvTreatments = new System.Windows.Forms.Label();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
@@ -83,10 +90,17 @@ namespace prescriptionSystem_project
             this.lb_finishedTreatmentPlans = new System.Windows.Forms.Label();
             this.lb_finishedTreatmentCount = new System.Windows.Forms.Label();
             this.pn_dashboard = new System.Windows.Forms.Panel();
-            this.combo_TreatmentList = new System.Windows.Forms.ComboBox();
-            this.button1 = new System.Windows.Forms.Button();
-            this.listView1 = new System.Windows.Forms.ListView();
-            this.combo_TreatmentItem = new System.Windows.Forms.ComboBox();
+            this.dataGridView4 = new System.Windows.Forms.DataGridView();
+            this.label7 = new System.Windows.Forms.Label();
+            this.dataGridView3 = new System.Windows.Forms.DataGridView();
+            this.pn_PrescriptionHistory = new System.Windows.Forms.Panel();
+            this.ck_protectedPrescriptionList = new System.Windows.Forms.CheckedListBox();
+            this.lb_warning = new System.Windows.Forms.Label();
+            this.bt_requestAccess = new System.Windows.Forms.Button();
+            this.dataGridView2 = new System.Windows.Forms.DataGridView();
+            this.label6 = new System.Windows.Forms.Label();
+            this.combo_patientPrHistory = new System.Windows.Forms.ComboBox();
+            this.lb_titleprsthistory = new System.Windows.Forms.Label();
             this.pn_menu.SuspendLayout();
             this.pn_userDetails.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -99,16 +113,21 @@ namespace prescriptionSystem_project
             this.pn_activeTreatments.SuspendLayout();
             this.pn_finishedTreatments.SuspendLayout();
             this.pn_dashboard.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView4)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView3)).BeginInit();
+            this.pn_PrescriptionHistory.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
             this.SuspendLayout();
             // 
             // pn_menu
             // 
             this.pn_menu.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(24)))), ((int)(((byte)(30)))), ((int)(((byte)(54)))));
+            this.pn_menu.Controls.Add(this.bt_logout);
             this.pn_menu.Controls.Add(this.bt_treatmentSession);
             this.pn_menu.Controls.Add(this.bt_prescriptionHistory);
             this.pn_menu.Controls.Add(this.bt_crPrescriptions);
             this.pn_menu.Controls.Add(this.bt_crTreatment);
-            this.pn_menu.Controls.Add(this.br_crTreatmentPlan);
+            this.pn_menu.Controls.Add(this.bt_crTreatmentPlan);
             this.pn_menu.Controls.Add(this.bt_dashboard);
             this.pn_menu.Controls.Add(this.pn_userDetails);
             this.pn_menu.Dock = System.Windows.Forms.DockStyle.Left;
@@ -117,6 +136,21 @@ namespace prescriptionSystem_project
             this.pn_menu.Size = new System.Drawing.Size(186, 577);
             this.pn_menu.TabIndex = 0;
             this.pn_menu.Paint += new System.Windows.Forms.PaintEventHandler(this.pn_menu_Paint);
+            // 
+            // bt_logout
+            // 
+            this.bt_logout.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.bt_logout.FlatAppearance.BorderSize = 0;
+            this.bt_logout.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.bt_logout.Font = new System.Drawing.Font("Nirmala UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bt_logout.ForeColor = System.Drawing.Color.Tomato;
+            this.bt_logout.Location = new System.Drawing.Point(0, 535);
+            this.bt_logout.Name = "bt_logout";
+            this.bt_logout.Size = new System.Drawing.Size(186, 42);
+            this.bt_logout.TabIndex = 7;
+            this.bt_logout.Text = "Logout";
+            this.bt_logout.UseVisualStyleBackColor = true;
+            this.bt_logout.Click += new System.EventHandler(this.bt_logout_Click);
             // 
             // bt_treatmentSession
             // 
@@ -146,6 +180,7 @@ namespace prescriptionSystem_project
             this.bt_prescriptionHistory.TabIndex = 4;
             this.bt_prescriptionHistory.Text = "Prescriptions History";
             this.bt_prescriptionHistory.UseVisualStyleBackColor = true;
+            this.bt_prescriptionHistory.Click += new System.EventHandler(this.bt_prescriptionHistory_Click);
             // 
             // bt_crPrescriptions
             // 
@@ -177,20 +212,20 @@ namespace prescriptionSystem_project
             this.bt_crTreatment.UseVisualStyleBackColor = true;
             this.bt_crTreatment.Click += new System.EventHandler(this.bt_crTreatment_Click);
             // 
-            // br_crTreatmentPlan
+            // bt_crTreatmentPlan
             // 
-            this.br_crTreatmentPlan.Dock = System.Windows.Forms.DockStyle.Top;
-            this.br_crTreatmentPlan.FlatAppearance.BorderSize = 0;
-            this.br_crTreatmentPlan.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.br_crTreatmentPlan.Font = new System.Drawing.Font("Nirmala UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.br_crTreatmentPlan.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(126)))), ((int)(((byte)(249)))));
-            this.br_crTreatmentPlan.Location = new System.Drawing.Point(0, 192);
-            this.br_crTreatmentPlan.Name = "br_crTreatmentPlan";
-            this.br_crTreatmentPlan.Size = new System.Drawing.Size(186, 42);
-            this.br_crTreatmentPlan.TabIndex = 2;
-            this.br_crTreatmentPlan.Text = "Create Treatment Plan";
-            this.br_crTreatmentPlan.UseVisualStyleBackColor = true;
-            this.br_crTreatmentPlan.Click += new System.EventHandler(this.br_crTreatmentPlan_Click);
+            this.bt_crTreatmentPlan.Dock = System.Windows.Forms.DockStyle.Top;
+            this.bt_crTreatmentPlan.FlatAppearance.BorderSize = 0;
+            this.bt_crTreatmentPlan.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.bt_crTreatmentPlan.Font = new System.Drawing.Font("Nirmala UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bt_crTreatmentPlan.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(126)))), ((int)(((byte)(249)))));
+            this.bt_crTreatmentPlan.Location = new System.Drawing.Point(0, 192);
+            this.bt_crTreatmentPlan.Name = "bt_crTreatmentPlan";
+            this.bt_crTreatmentPlan.Size = new System.Drawing.Size(186, 42);
+            this.bt_crTreatmentPlan.TabIndex = 2;
+            this.bt_crTreatmentPlan.Text = "Create Treatment Plan";
+            this.bt_crTreatmentPlan.UseVisualStyleBackColor = true;
+            this.bt_crTreatmentPlan.Click += new System.EventHandler(this.br_crTreatmentPlan_Click);
             // 
             // bt_dashboard
             // 
@@ -384,7 +419,6 @@ namespace prescriptionSystem_project
             this.label2.Size = new System.Drawing.Size(59, 20);
             this.label2.TabIndex = 4;
             this.label2.Text = "Patient";
-            this.label2.Click += new System.EventHandler(this.label2_Click);
             // 
             // combox_item
             // 
@@ -524,7 +558,6 @@ namespace prescriptionSystem_project
             this.lb_enddate.Size = new System.Drawing.Size(82, 40);
             this.lb_enddate.TabIndex = 4;
             this.lb_enddate.Text = "Treatment\r\nend date";
-            this.lb_enddate.Click += new System.EventHandler(this.lb_doses_Click);
             // 
             // lb_title
             // 
@@ -556,6 +589,45 @@ namespace prescriptionSystem_project
             this.pn_treatmentSession.Name = "pn_treatmentSession";
             this.pn_treatmentSession.Size = new System.Drawing.Size(770, 553);
             this.pn_treatmentSession.TabIndex = 10;
+            // 
+            // combo_TreatmentItem
+            // 
+            this.combo_TreatmentItem.FormattingEnabled = true;
+            this.combo_TreatmentItem.Location = new System.Drawing.Point(195, 336);
+            this.combo_TreatmentItem.Name = "combo_TreatmentItem";
+            this.combo_TreatmentItem.Size = new System.Drawing.Size(249, 21);
+            this.combo_TreatmentItem.TabIndex = 13;
+            // 
+            // listView1
+            // 
+            this.listView1.HideSelection = false;
+            this.listView1.Location = new System.Drawing.Point(450, 305);
+            this.listView1.Name = "listView1";
+            this.listView1.Size = new System.Drawing.Size(261, 98);
+            this.listView1.TabIndex = 12;
+            this.listView1.UseCompatibleStateImageBehavior = false;
+            // 
+            // button1
+            // 
+            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
+            this.button1.Location = new System.Drawing.Point(195, 368);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(249, 35);
+            this.button1.TabIndex = 11;
+            this.button1.Text = "Add";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click_2);
+            // 
+            // combo_TreatmentList
+            // 
+            this.combo_TreatmentList.FormattingEnabled = true;
+            this.combo_TreatmentList.Location = new System.Drawing.Point(195, 305);
+            this.combo_TreatmentList.Name = "combo_TreatmentList";
+            this.combo_TreatmentList.Size = new System.Drawing.Size(249, 21);
+            this.combo_TreatmentList.TabIndex = 10;
+            this.combo_TreatmentList.SelectedIndexChanged += new System.EventHandler(this.combo_TreatmentList_SelectedIndexChanged);
             // 
             // lb_tr
             // 
@@ -720,51 +792,151 @@ namespace prescriptionSystem_project
             // 
             // pn_dashboard
             // 
+            this.pn_dashboard.Controls.Add(this.dataGridView4);
+            this.pn_dashboard.Controls.Add(this.label7);
+            this.pn_dashboard.Controls.Add(this.dataGridView3);
             this.pn_dashboard.Controls.Add(this.pn_finishedTreatments);
             this.pn_dashboard.Controls.Add(this.pn_activeTreatments);
             this.pn_dashboard.Location = new System.Drawing.Point(182, 24);
             this.pn_dashboard.Name = "pn_dashboard";
             this.pn_dashboard.Size = new System.Drawing.Size(770, 553);
             this.pn_dashboard.TabIndex = 2;
+            this.pn_dashboard.Paint += new System.Windows.Forms.PaintEventHandler(this.pn_dashboard_Paint);
             // 
-            // combo_TreatmentList
+            // dataGridView4
             // 
-            this.combo_TreatmentList.FormattingEnabled = true;
-            this.combo_TreatmentList.Location = new System.Drawing.Point(195, 305);
-            this.combo_TreatmentList.Name = "combo_TreatmentList";
-            this.combo_TreatmentList.Size = new System.Drawing.Size(249, 21);
-            this.combo_TreatmentList.TabIndex = 10;
-            this.combo_TreatmentList.SelectedIndexChanged += new System.EventHandler(this.combo_TreatmentList_SelectedIndexChanged);
+            this.dataGridView4.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
+            this.dataGridView4.BackgroundColor = System.Drawing.Color.White;
+            this.dataGridView4.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView4.Location = new System.Drawing.Point(76, 266);
+            this.dataGridView4.Name = "dataGridView4";
+            this.dataGridView4.RowHeadersVisible = false;
+            this.dataGridView4.ShowEditingIcon = false;
+            this.dataGridView4.Size = new System.Drawing.Size(635, 249);
+            this.dataGridView4.TabIndex = 4;
+            this.dataGridView4.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView4_CellContentClick);
             // 
-            // button1
+            // label7
             // 
-            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
-            this.button1.Location = new System.Drawing.Point(195, 368);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(249, 35);
-            this.button1.TabIndex = 11;
-            this.button1.Text = "Add";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click_2);
+            this.label7.AutoSize = true;
+            this.label7.Font = new System.Drawing.Font("Microsoft Tai Le", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label7.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            this.label7.Location = new System.Drawing.Point(72, 232);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(200, 21);
+            this.label7.TabIndex = 3;
+            this.label7.Text = "Prescription Requests Feed:";
             // 
-            // listView1
+            // dataGridView3
             // 
-            this.listView1.HideSelection = false;
-            this.listView1.Location = new System.Drawing.Point(450, 305);
-            this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(261, 98);
-            this.listView1.TabIndex = 12;
-            this.listView1.UseCompatibleStateImageBehavior = false;
+            this.dataGridView3.BackgroundColor = System.Drawing.Color.White;
+            this.dataGridView3.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.dataGridView3.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView3.Location = new System.Drawing.Point(76, 266);
+            this.dataGridView3.Name = "dataGridView3";
+            this.dataGridView3.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle3.Padding = new System.Windows.Forms.Padding(2);
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.ActiveCaption;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridView3.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
+            this.dataGridView3.RowHeadersVisible = false;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.dataGridView3.RowsDefaultCellStyle = dataGridViewCellStyle4;
+            this.dataGridView3.ShowEditingIcon = false;
+            this.dataGridView3.Size = new System.Drawing.Size(633, 249);
+            this.dataGridView3.TabIndex = 2;
             // 
-            // combo_TreatmentItem
+            // pn_PrescriptionHistory
             // 
-            this.combo_TreatmentItem.FormattingEnabled = true;
-            this.combo_TreatmentItem.Location = new System.Drawing.Point(195, 336);
-            this.combo_TreatmentItem.Name = "combo_TreatmentItem";
-            this.combo_TreatmentItem.Size = new System.Drawing.Size(249, 21);
-            this.combo_TreatmentItem.TabIndex = 13;
+            this.pn_PrescriptionHistory.Controls.Add(this.ck_protectedPrescriptionList);
+            this.pn_PrescriptionHistory.Controls.Add(this.lb_warning);
+            this.pn_PrescriptionHistory.Controls.Add(this.bt_requestAccess);
+            this.pn_PrescriptionHistory.Controls.Add(this.dataGridView2);
+            this.pn_PrescriptionHistory.Controls.Add(this.label6);
+            this.pn_PrescriptionHistory.Controls.Add(this.combo_patientPrHistory);
+            this.pn_PrescriptionHistory.Controls.Add(this.lb_titleprsthistory);
+            this.pn_PrescriptionHistory.Location = new System.Drawing.Point(182, 24);
+            this.pn_PrescriptionHistory.Name = "pn_PrescriptionHistory";
+            this.pn_PrescriptionHistory.Size = new System.Drawing.Size(770, 553);
+            this.pn_PrescriptionHistory.TabIndex = 14;
+            // 
+            // ck_protectedPrescriptionList
+            // 
+            this.ck_protectedPrescriptionList.FormattingEnabled = true;
+            this.ck_protectedPrescriptionList.Location = new System.Drawing.Point(44, 446);
+            this.ck_protectedPrescriptionList.Name = "ck_protectedPrescriptionList";
+            this.ck_protectedPrescriptionList.Size = new System.Drawing.Size(665, 64);
+            this.ck_protectedPrescriptionList.TabIndex = 6;
+            // 
+            // lb_warning
+            // 
+            this.lb_warning.AutoSize = true;
+            this.lb_warning.ForeColor = System.Drawing.Color.Coral;
+            this.lb_warning.Location = new System.Drawing.Point(114, 526);
+            this.lb_warning.Name = "lb_warning";
+            this.lb_warning.Size = new System.Drawing.Size(463, 13);
+            this.lb_warning.TabIndex = 5;
+            this.lb_warning.Text = "You do not have acess to the above prescriptions history form this patient. Reque" +
+    "st for Access ->";
+            // 
+            // bt_requestAccess
+            // 
+            this.bt_requestAccess.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.bt_requestAccess.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
+            this.bt_requestAccess.Location = new System.Drawing.Point(583, 521);
+            this.bt_requestAccess.Name = "bt_requestAccess";
+            this.bt_requestAccess.Size = new System.Drawing.Size(128, 23);
+            this.bt_requestAccess.TabIndex = 4;
+            this.bt_requestAccess.Text = "Request Access";
+            this.bt_requestAccess.UseVisualStyleBackColor = true;
+            this.bt_requestAccess.Click += new System.EventHandler(this.bt_requestAccess_Click);
+            // 
+            // dataGridView2
+            // 
+            this.dataGridView2.BackgroundColor = System.Drawing.Color.DimGray;
+            this.dataGridView2.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.dataGridView2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView2.Location = new System.Drawing.Point(44, 160);
+            this.dataGridView2.Name = "dataGridView2";
+            this.dataGridView2.RowHeadersVisible = false;
+            this.dataGridView2.Size = new System.Drawing.Size(665, 266);
+            this.dataGridView2.TabIndex = 3;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
+            this.label6.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            this.label6.Location = new System.Drawing.Point(45, 106);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(59, 20);
+            this.label6.TabIndex = 2;
+            this.label6.Text = "Patient";
+            // 
+            // combo_patientPrHistory
+            // 
+            this.combo_patientPrHistory.FormattingEnabled = true;
+            this.combo_patientPrHistory.Location = new System.Drawing.Point(142, 108);
+            this.combo_patientPrHistory.Name = "combo_patientPrHistory";
+            this.combo_patientPrHistory.Size = new System.Drawing.Size(569, 21);
+            this.combo_patientPrHistory.TabIndex = 1;
+            this.combo_patientPrHistory.SelectedIndexChanged += new System.EventHandler(this.combo_patientPrHistory_SelectedIndexChanged);
+            // 
+            // lb_titleprsthistory
+            // 
+            this.lb_titleprsthistory.AutoSize = true;
+            this.lb_titleprsthistory.Font = new System.Drawing.Font("Microsoft YaHei", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lb_titleprsthistory.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
+            this.lb_titleprsthistory.Location = new System.Drawing.Point(37, 38);
+            this.lb_titleprsthistory.Name = "lb_titleprsthistory";
+            this.lb_titleprsthistory.Size = new System.Drawing.Size(290, 38);
+            this.lb_titleprsthistory.TabIndex = 0;
+            this.lb_titleprsthistory.Text = "Prescription History";
             // 
             // Dashboard
             // 
@@ -772,10 +944,11 @@ namespace prescriptionSystem_project
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(51)))), ((int)(((byte)(73)))));
             this.ClientSize = new System.Drawing.Size(951, 577);
-            this.Controls.Add(this.pn_treatmentSession);
+            this.Controls.Add(this.pn_PrescriptionHistory);
             this.Controls.Add(this.pn_crTreatment);
-            this.Controls.Add(this.pn_createPrescription);
+            this.Controls.Add(this.pn_treatmentSession);
             this.Controls.Add(this.pn_dashboard);
+            this.Controls.Add(this.pn_createPrescription);
             this.Controls.Add(this.pn_window);
             this.Controls.Add(this.pn_menu);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
@@ -801,6 +974,12 @@ namespace prescriptionSystem_project
             this.pn_finishedTreatments.ResumeLayout(false);
             this.pn_finishedTreatments.PerformLayout();
             this.pn_dashboard.ResumeLayout(false);
+            this.pn_dashboard.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView4)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView3)).EndInit();
+            this.pn_PrescriptionHistory.ResumeLayout(false);
+            this.pn_PrescriptionHistory.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -815,7 +994,7 @@ namespace prescriptionSystem_project
         private System.Windows.Forms.Label lb_username;
         private System.Windows.Forms.Panel pn_window;
         private System.Windows.Forms.Button bt_close;
-        private System.Windows.Forms.Button br_crTreatmentPlan;
+        private System.Windows.Forms.Button bt_crTreatmentPlan;
         private System.Windows.Forms.Label lb_WindowTitle;
         private System.Windows.Forms.Button bt_crPrescriptions;
         private System.Windows.Forms.Button bt_crTreatment;
@@ -865,6 +1044,18 @@ namespace prescriptionSystem_project
         private System.Windows.Forms.ComboBox combo_TreatmentList;
         private System.Windows.Forms.ListView listView1;
         private System.Windows.Forms.ComboBox combo_TreatmentItem;
+        private System.Windows.Forms.Panel pn_PrescriptionHistory;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.ComboBox combo_patientPrHistory;
+        private System.Windows.Forms.Label lb_titleprsthistory;
+        private System.Windows.Forms.DataGridView dataGridView2;
+        private System.Windows.Forms.Label lb_warning;
+        private System.Windows.Forms.Button bt_requestAccess;
+        private System.Windows.Forms.CheckedListBox ck_protectedPrescriptionList;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.DataGridView dataGridView3;
+        private System.Windows.Forms.Button bt_logout;
+        private System.Windows.Forms.DataGridView dataGridView4;
     }
 }
 

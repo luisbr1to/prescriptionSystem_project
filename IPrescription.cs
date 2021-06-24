@@ -12,6 +12,7 @@ namespace prescriptionSystem_project
 
     public interface IPrescription
     {
+        int Id { get; set; }
         int PatientNIF { get; set; }
         int TherapistNIF { get; set; }
         ItemType Item { get;}

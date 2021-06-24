@@ -4,6 +4,7 @@ namespace prescriptionSystem_project
 {
     public class Prescription : IPrescription
     {
+        public int Id { get; set; }
         public int PatientNIF { get; set; }
         public int TherapistNIF { get; set; }
         public ItemType Item { get; }
@@ -11,7 +12,7 @@ namespace prescriptionSystem_project
         public DateTime Date { get; set; }
         public int Quantity { get; set; }
 
-        protected Prescription(int patientNif, int therapistNif, ItemType item, string description, DateTime date, int quantity)
+        public Prescription(int patientNif, int therapistNif, ItemType item, string description, DateTime date, int quantity)
         {
             PatientNIF = patientNif;
             TherapistNIF = therapistNif;
@@ -20,6 +21,25 @@ namespace prescriptionSystem_project
             Date = date;
             Quantity = quantity;
         }
-        
+
+        public Prescription(int id, int patientNif, int therapistNif, ItemType item, string description, DateTime date, int quantity)
+        {
+            Id = id;
+            PatientNIF = patientNif;
+            TherapistNIF = therapistNif;
+            Item = item;
+            Description = description;
+            Date = date;
+            Quantity = quantity;
+        }
+
+        public string DisplayMemberChecklist
+        {
+            get
+            {
+                return Item + ", (" + Date + ")";
+            }
+        }
+
     }
 }

@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
+using prescriptionSystem_project.Repositorys;
 
 namespace prescriptionSystem_project
 {
@@ -16,7 +17,8 @@ namespace prescriptionSystem_project
     {
         private int mouseX = 0, mouseY = 0;
         private bool mouseDown;
-
+        private UserRepository userRepo = new UserRepository();
+        private Login login;
         [DllImport("Gdi32.dll", EntryPoint = "CreateRoundRectRgn")]
 
         private static extern IntPtr CreateRoundRectRgn
@@ -27,13 +29,14 @@ namespace prescriptionSystem_project
             int nBottomRect,
             int nWidthEllipse,
             int nHeightEllipse
-
         );
 
-        public Register()
+        public Register(Login login)
         {
             InitializeComponent();
+            this.CenterToScreen();
             Region = System.Drawing.Region.FromHrgn(CreateRoundRectRgn(0, 0, Width, Height, 15, 15));
+            this.login = login;
         }
 
         private void label1_Click(object sender, EventArgs e)
@@ -53,8 +56,6 @@ namespace prescriptionSystem_project
 
         private void bt_register_Click(object sender, EventArgs e)
         {
-            Database.DatabaseManager DB = Database.DatabaseManager.GetInstance();
-            
             int txnif = int.Parse(tx_nif.Text);
             string txpass = tx_pass.Text;
             string txname = tx_name.Text;
@@ -65,21 +66,41 @@ namespace prescriptionSystem_project
             if (rd_patient.Checked)
             {
                 Patient patient = new Patient(txnif, txpass, txname, txphone, txaddress, txbirth);
-                
-                DB.addPatient(patient);
+                userRepo.InsertUserPatient(patient);
+                MessageBox.Show("Account Registered Successfully!");
+                this.Dispose();
+                login.Show();
             }
             else if (rd_therapist.Checked)
             {
                 Therapist therapist = new Therapist(txnif, txpass, txname, txphone, txaddress, txbirth);
-                DB.addTherapist(therapist);
+                userRepo.InsertUserTherapist(therapist);
+                MessageBox.Show("Account Registered Successfully!");
+                this.Dispose();
+                login.Show();
             }
             else
             {
-                Debug.Write("Selecionar um tipo");
+                MessageBox.Show("Select an user type !");
             }
         }
+        
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
 
-        private void panel1_MouseMove(object sender, MouseEventArgs e)
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void panel1_MouseUp_1(object sender, MouseEventArgs e)
+        {
+            mouseDown = false;
+        }
+
+        private void panel1_MouseMove_1(object sender, MouseEventArgs e)
         {
             if (mouseDown)
             {
@@ -89,14 +110,10 @@ namespace prescriptionSystem_project
             }
         }
 
-        private void panel1_MouseUp(object sender, MouseEventArgs e)
+        private void button2_Click(object sender, EventArgs e)
         {
-            mouseDown = false;
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            Application.Exit();
+            this.Dispose();
+            login.Show();
         }
 
         private void panel1_MouseDown(object sender, MouseEventArgs e)

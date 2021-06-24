@@ -1,25 +1,49 @@
 ﻿using System;
 using System.Data.SqlClient;
 using System.Diagnostics;
+using System.Drawing.Text;
+using System.Windows.Forms;
+using prescriptionSystem_project.Repositorys;
 
 namespace prescriptionSystem_project
 {
-    public class Auth
+    
+    interface IAuthentication
     {
-        public Auth() //login
+        bool checkAuthentication(int nif, string password);
+    }
+
+    public class Auth : IAuthentication
+    {
+        public bool checkAuthentication(int nif, string password)
         {
+            Debug.Write($"Login efectuado com sucesso : User details nif: {nif} passowrd: {password}");
+            return true;
         }
+    }
 
-        public User CheckAuth(int nif, string pass)
+    class Proxy : IAuthentication
+    {
+        private IAuthentication _authentication;
+        private UserRepository userRepo = new UserRepository();
+        public Proxy(IAuthentication authentication)
         {
-            User user;
-
-            Database.DatabaseManager DB = Database.DatabaseManager.GetInstance();
-
-            string query = string.Format("SELECT * FROM Users WHERE nif='{0}' AND password= '{1}'", nif, pass);
-           
-            user = DB.GetUserData(query);
-            return user;
+            _authentication = authentication;
+        }
+        
+        public bool checkAuthentication(int nif, string password)
+        {
+           bool result = userRepo.CheckAuthentication(nif, password);
+            
+            if (result == true)
+            {
+                _authentication.checkAuthentication(nif, password);
+            }
+            else
+            {
+                Debug.Write($"Erro na incerção de dados, ou Conta não registada!\n");
+            }
+            return result;
         }
     }
 }
